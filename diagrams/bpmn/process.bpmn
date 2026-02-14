@@ -1,0 +1,368 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.4.0">
+  <bpmn:process id="Process_DVDDigitization" isExecutable="false">
+    <bpmn:laneSet id="LaneSet_1">
+      <bpmn:lane id="Lane_ITTechnician" name="IT Technician">
+        <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_InspectDisc</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_InsertAndVerifyVLC</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_PlaybackStutters</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_CleanDisc</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_OpenHandbrake</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ClickOpenSource</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SelectMainTitle</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ApplyPreset</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_SetContainer</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_EnableDeinterlace</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_TypeFileName</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_DiskFull</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_PurgeTempFiles</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_HandbrakeEncodingComplete</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_DragDropMP4</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>ExclusiveGateway_TransferFailed</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ReformatUSB</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_MP4Transferred</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_EjectUSB</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Task_ReturnDiscUSB</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>EndEvent_1</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_SoftwareHardware" name="Software/Hardware">
+        <!-- While conceptually a separate lane, the tasks are performed by the IT Technician interacting with software/hardware.
+             For a direct mapping from SOP tasks to IT Technician lane, this lane may remain empty of direct flowNodeRefs.
+             In a more detailed BPMN, this lane could contain 'service tasks' or 'data objects' representing software actions. -->
+      </bpmn:lane>
+    </bpmn:laneSet>
+
+    <bpmn:startEvent id="StartEvent_1" name="Start">
+      <bpmn:outgoing>SequenceFlow_1</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:task id="Task_InspectDisc" name="Inspect physical disc surface">
+      <bpmn:incoming>SequenceFlow_1</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_2</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_InsertAndVerifyVLC" name="Insert DVD and Open VLC Media Player to verify playback">
+      <bpmn:incoming>SequenceFlow_2</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_CleanToVerify</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_3</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_PlaybackStutters" name="Playback Stutters?">
+      <bpmn:incoming>SequenceFlow_3</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_PlaybackStuttersYes</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_PlaybackStuttersNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_CleanDisc" name="Clean disc with microfiber cloth and Retry">
+      <bpmn:incoming>SequenceFlow_PlaybackStuttersYes</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_CleanToVerify</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_OpenHandbrake" name="Open Handbrake">
+      <bpmn:incoming>SequenceFlow_PlaybackStuttersNo</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_4</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_ClickOpenSource" name="Click 'Open Source' to load the disc">
+      <bpmn:incoming>SequenceFlow_4</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_PurgeToOpenSource</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_5</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_SelectMainTitle" name="Select the main movie title">
+      <bpmn:incoming>SequenceFlow_5</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_6</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_ApplyPreset" name="Apply the 'Fast 480p30' preset">
+      <bpmn:incoming>SequenceFlow_6</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_7</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_SetContainer" name="Set the 'Container' to MP4">
+      <bpmn:incoming>SequenceFlow_7</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_8</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_EnableDeinterlace" name="Enable the 'Deinterlace' filter">
+      <bpmn:incoming>SequenceFlow_8</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_9</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_TypeFileName" name="Type the file name">
+      <bpmn:incoming>SequenceFlow_9</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_10</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_DiskFull" name="Handbrake reports Disk Full error?">
+      <bpmn:incoming>SequenceFlow_10</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_DiskFullYes</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_DiskFullNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_PurgeTempFiles" name="Purge previous temporary files in staging area">
+      <bpmn:incoming>SequenceFlow_DiskFullYes</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_PurgeToOpenSource</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_HandbrakeEncodingComplete" name="Handbrake Encoding Complete">
+      <bpmn:incoming>SequenceFlow_DiskFullNo</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_11</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_DragDropMP4" name="Drag and Drop MP4 file to client USB drive">
+      <bpmn:incoming>SequenceFlow_11</bpmn:incoming>
+      <bpmn:incoming>SequenceFlow_ReformatToDragDrop</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_12</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:exclusiveGateway id="ExclusiveGateway_TransferFailed" name="File &gt;4GB fails to transfer to USB?">
+      <bpmn:incoming>SequenceFlow_12</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_TransferFailedYes</bpmn:outgoing>
+      <bpmn:outgoing>SequenceFlow_TransferFailedNo</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:task id="Task_ReformatUSB" name="Reformat USB drive to exFAT">
+      <bpmn:incoming>SequenceFlow_TransferFailedYes</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_ReformatToDragDrop</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_MP4Transferred" name="MP4 successfully transferred">
+      <bpmn:incoming>SequenceFlow_TransferFailedNo</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_13</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_EjectUSB" name="Right-Click the USB drive icon and Select 'Eject'">
+      <bpmn:incoming>SequenceFlow_13</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_14</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:task id="Task_ReturnDiscUSB" name="Return the physical disc and USB to the client">
+      <bpmn:incoming>SequenceFlow_14</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_15</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:endEvent id="EndEvent_1" name="End">
+      <bpmn:incoming>SequenceFlow_15</bpmn:incoming>
+    </bpmn:endEvent>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="SequenceFlow_1" sourceRef="StartEvent_1" targetRef="Task_InspectDisc" />
+    <bpmn:sequenceFlow id="SequenceFlow_2" sourceRef="Task_InspectDisc" targetRef="Task_InsertAndVerifyVLC" />
+    <bpmn:sequenceFlow id="SequenceFlow_3" sourceRef="Task_InsertAndVerifyVLC" targetRef="ExclusiveGateway_PlaybackStutters" />
+    <bpmn:sequenceFlow id="SequenceFlow_PlaybackStuttersYes" name="Yes" sourceRef="ExclusiveGateway_PlaybackStutters" targetRef="Task_CleanDisc" />
+    <bpmn:sequenceFlow id="SequenceFlow_CleanToVerify" sourceRef="Task_CleanDisc" targetRef="Task_InsertAndVerifyVLC" />
+    <bpmn:sequenceFlow id="SequenceFlow_PlaybackStuttersNo" name="No" sourceRef="ExclusiveGateway_PlaybackStutters" targetRef="Task_OpenHandbrake" />
+    <bpmn:sequenceFlow id="SequenceFlow_4" sourceRef="Task_OpenHandbrake" targetRef="Task_ClickOpenSource" />
+    <bpmn:sequenceFlow id="SequenceFlow_5" sourceRef="Task_ClickOpenSource" targetRef="Task_SelectMainTitle" />
+    <bpmn:sequenceFlow id="SequenceFlow_6" sourceRef="Task_SelectMainTitle" targetRef="Task_ApplyPreset" />
+    <bpmn:sequenceFlow id="SequenceFlow_7" sourceRef="Task_ApplyPreset" targetRef="Task_SetContainer" />
+    <bpmn:sequenceFlow id="SequenceFlow_8" sourceRef="Task_SetContainer" targetRef="Task_EnableDeinterlace" />
+    <bpmn:sequenceFlow id="SequenceFlow_9" sourceRef="Task_EnableDeinterlace" targetRef="Task_TypeFileName" />
+    <bpmn:sequenceFlow id="SequenceFlow_10" sourceRef="Task_TypeFileName" targetRef="ExclusiveGateway_DiskFull" />
+    <bpmn:sequenceFlow id="SequenceFlow_DiskFullYes" name="Yes" sourceRef="ExclusiveGateway_DiskFull" targetRef="Task_PurgeTempFiles" />
+    <bpmn:sequenceFlow id="SequenceFlow_PurgeToOpenSource" sourceRef="Task_PurgeTempFiles" targetRef="Task_ClickOpenSource" />
+    <bpmn:sequenceFlow id="SequenceFlow_DiskFullNo" name="No" sourceRef="ExclusiveGateway_DiskFull" targetRef="Task_HandbrakeEncodingComplete" />
+    <bpmn:sequenceFlow id="SequenceFlow_11" sourceRef="Task_HandbrakeEncodingComplete" targetRef="Task_DragDropMP4" />
+    <bpmn:sequenceFlow id="SequenceFlow_12" sourceRef="Task_DragDropMP4" targetRef="ExclusiveGateway_TransferFailed" />
+    <bpmn:sequenceFlow id="SequenceFlow_TransferFailedYes" name="Yes" sourceRef="ExclusiveGateway_TransferFailed" targetRef="Task_ReformatUSB" />
+    <bpmn:sequenceFlow id="SequenceFlow_ReformatToDragDrop" sourceRef="Task_ReformatUSB" targetRef="Task_DragDropMP4" />
+    <bpmn:sequenceFlow id="SequenceFlow_TransferFailedNo" name="No" sourceRef="ExclusiveGateway_TransferFailed" targetRef="Task_MP4Transferred" />
+    <bpmn:sequenceFlow id="SequenceFlow_13" sourceRef="Task_MP4Transferred" targetRef="Task_EjectUSB" />
+    <bpmn:sequenceFlow id="SequenceFlow_14" sourceRef="Task_EjectUSB" targetRef="Task_ReturnDiscUSB" />
+    <bpmn:sequenceFlow id="SequenceFlow_15" sourceRef="Task_ReturnDiscUSB" targetRef="EndEvent_1" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_DVDDigitization">
+      <bpmndi:BPMNShape id="Lane_ITTechnician_di" bpmnElement="Lane_ITTechnician">
+        <dc:Bounds x="160" y="80" width="1300" height="700" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_SoftwareHardware_di" bpmnElement="Lane_SoftwareHardware">
+        <dc:Bounds x="160" y="780" width="1300" height="200" />
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="StartEvent_1_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="200" y="180" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="204" y="223" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InspectDisc_di" bpmnElement="Task_InspectDisc">
+        <dc:Bounds x="280" y="165" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_InsertAndVerifyVLC_di" bpmnElement="Task_InsertAndVerifyVLC">
+        <dc:Bounds x="420" y="165" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_PlaybackStutters_di" bpmnElement="ExclusiveGateway_PlaybackStutters" isMarkerVisible="true">
+        <dc:Bounds x="565" y="180" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="553" y="150" width="75" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_CleanDisc_di" bpmnElement="Task_CleanDisc">
+        <dc:Bounds x="540" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_OpenHandbrake_di" bpmnElement="Task_OpenHandbrake">
+        <dc:Bounds x="660" y="165" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ClickOpenSource_di" bpmnElement="Task_ClickOpenSource">
+        <dc:Bounds x="800" y="165" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SelectMainTitle_di" bpmnElement="Task_SelectMainTitle">
+        <dc:Bounds x="940" y="165" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ApplyPreset_di" bpmnElement="Task_ApplyPreset">
+        <dc:Bounds x="940" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_SetContainer_di" bpmnElement="Task_SetContainer">
+        <dc:Bounds x="940" y="375" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EnableDeinterlace_di" bpmnElement="Task_EnableDeinterlace">
+        <dc:Bounds x="940" y="480" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_TypeFileName_di" bpmnElement="Task_TypeFileName">
+        <dc:Bounds x="940" y="585" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_DiskFull_di" bpmnElement="ExclusiveGateway_DiskFull" isMarkerVisible="true">
+        <dc:Bounds x="1085" y="600" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1076" y="567" width="69" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_PurgeTempFiles_di" bpmnElement="Task_PurgeTempFiles">
+        <dc:Bounds x="1060" y="700" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_HandbrakeEncodingComplete_di" bpmnElement="Task_HandbrakeEncodingComplete">
+        <dc:Bounds x="1200" y="585" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_DragDropMP4_di" bpmnElement="Task_DragDropMP4">
+        <dc:Bounds x="280" y="480" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ExclusiveGateway_TransferFailed_di" bpmnElement="ExclusiveGateway_TransferFailed" isMarkerVisible="true">
+        <dc:Bounds x="425" y="495" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="408" y="465" width="84" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReformatUSB_di" bpmnElement="Task_ReformatUSB">
+        <dc:Bounds x="400" y="600" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_MP4Transferred_di" bpmnElement="Task_MP4Transferred">
+        <dc:Bounds x="540" y="480" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_EjectUSB_di" bpmnElement="Task_EjectUSB">
+        <dc:Bounds x="680" y="480" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_ReturnDiscUSB_di" bpmnElement="Task_ReturnDiscUSB">
+        <dc:Bounds x="820" y="480" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1_di" bpmnElement="EndEvent_1">
+        <dc:Bounds x="852" y="602" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="860" y="645" width="20" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- Sequence Flows -->
+      <bpmndi:BPMNEdge id="SequenceFlow_1_di" bpmnElement="SequenceFlow_1">
+        <di:waypoint x="236" y="198" />
+        <di:waypoint x="280" y="198" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_2_di" bpmnElement="SequenceFlow_2">
+        <di:waypoint x="380" y="198" />
+        <di:waypoint x="420" y="198" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_3_di" bpmnElement="SequenceFlow_3">
+        <di:waypoint x="520" y="198" />
+        <di:waypoint x="565" y="198" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_PlaybackStuttersYes_di" bpmnElement="SequenceFlow_PlaybackStuttersYes">
+        <di:waypoint x="590" y="230" />
+        <di:waypoint x="590" y="270" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="598" y="247" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_CleanToVerify_di" bpmnElement="SequenceFlow_CleanToVerify">
+        <di:waypoint x="540" y="310" />
+        <di:waypoint x="470" y="310" />
+        <di:waypoint x="470" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_PlaybackStuttersNo_di" bpmnElement="SequenceFlow_PlaybackStuttersNo">
+        <di:waypoint x="615" y="205" />
+        <di:waypoint x="660" y="205" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="626" y="188" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_4_di" bpmnElement="SequenceFlow_4">
+        <di:waypoint x="760" y="205" />
+        <di:waypoint x="800" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_5_di" bpmnElement="SequenceFlow_5">
+        <di:waypoint x="900" y="205" />
+        <di:waypoint x="940" y="205" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_6_di" bpmnElement="SequenceFlow_6">
+        <di:waypoint x="990" y="245" />
+        <di:waypoint x="990" y="270" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_7_di" bpmnElement="SequenceFlow_7">
+        <di:waypoint x="990" y="350" />
+        <di:waypoint x="990" y="375" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_8_di" bpmnElement="SequenceFlow_8">
+        <di:waypoint x="990" y="455" />
+        <di:waypoint x="990" y="480" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_9_di" bpmnElement="SequenceFlow_9">
+        <di:waypoint x="990" y="560" />
+        <di:waypoint x="990" y="585" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_10_di" bpmnElement="SequenceFlow_10">
+        <di:waypoint x="1040" y="625" />
+        <di:waypoint x="1085" y="625" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_DiskFullYes_di" bpmnElement="SequenceFlow_DiskFullYes">
+        <di:waypoint x="1110" y="650" />
+        <di:waypoint x="1110" y="700" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1119" y="667" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_PurgeToOpenSource_di" bpmnElement="SequenceFlow_PurgeToOpenSource">
+        <di:waypoint x="1060" y="740" />
+        <di:waypoint x="850" y="740" />
+        <di:waypoint x="850" y="245" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_DiskFullNo_di" bpmnElement="SequenceFlow_DiskFullNo">
+        <di:waypoint x="1135" y="625" />
+        <di:waypoint x="1200" y="625" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1150" y="608" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_11_di" bpmnElement="SequenceFlow_11">
+        <di:waypoint x="1250" y="665" />
+        <di:waypoint x="1250" y="790" />
+        <di:waypoint x="330" y="790" />
+        <di:waypoint x="330" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_12_di" bpmnElement="SequenceFlow_12">
+        <di:waypoint x="380" y="520" />
+        <di:waypoint x="425" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_TransferFailedYes_di" bpmnElement="SequenceFlow_TransferFailedYes">
+        <di:waypoint x="450" y="545" />
+        <di:waypoint x="450" y="600" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="459" y="567" width="19" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_ReformatToDragDrop_di" bpmnElement="SequenceFlow_ReformatToDragDrop">
+        <di:waypoint x="400" y="640" />
+        <di:waypoint x="330" y="640" />
+        <di:waypoint x="330" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_TransferFailedNo_di" bpmnElement="SequenceFlow_TransferFailedNo">
+        <di:waypoint x="475" y="520" />
+        <di:waypoint x="540" y="520" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="487" y="503" width="13" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_13_di" bpmnElement="SequenceFlow_13">
+        <di:waypoint x="640" y="520" />
+        <di:waypoint x="680" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_14_di" bpmnElement="SequenceFlow_14">
+        <di:waypoint x="780" y="520" />
+        <di:waypoint x="820" y="520" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_15_di" bpmnElement="SequenceFlow_15">
+        <di:waypoint x="870" y="560" />
+        <di:waypoint x="870" y="602" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

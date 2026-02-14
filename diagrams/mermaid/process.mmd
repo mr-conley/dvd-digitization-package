@@ -1,0 +1,28 @@
+graph TD
+    A[Start] --> B(Inspect physical disc surface)
+    B --> C(Insert DVD and Open VLC Media Player to verify playback)
+    C --> D{Playback Stutters?}
+    D -->|Yes| C
+    D -->|No| E(Proceed with Handbrake)
+
+    E --> F(Open Handbrake)
+    F --> G(Click Open Source to load the disc)
+    G --> H(Select the main movie title)
+    H --> I(Apply the Fast 480p30 preset)
+    I --> J(Set the Container to MP4)
+    J --> K(Enable the Deinterlace filter)
+    K --> L(Type the file name)
+    L --> M{Disk Full Error?}
+    M -->|Yes| N(Purge previous temporary files in staging area)
+    N --> G
+    M -->|No| O(Handbrake Encoding Complete)
+
+    O --> P(Drag and Drop MP4 file to client USB drive)
+    P --> Q{File over 4GB fails to transfer?}
+    Q -->|Yes| R(Reformat USB drive to exFAT)
+    R --> P
+    Q -->|No| S(MP4 successfully transferred)
+
+    S --> T(Right-Click the USB drive icon and Select Eject)
+    T --> U(Return the physical disc and USB to the client)
+    U --> V[End]
